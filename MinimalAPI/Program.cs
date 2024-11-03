@@ -9,6 +9,12 @@ app.MapGet("/", () => "Hello World!");
 app.Run(async(HttpContext context) =>
 {
     //context.Request
+
+    foreach (var key in context.Request.Query.Keys)
+    {
+        await context.Response.WriteAsync($"{key}: {context.Request.Query[key]}\r\n");
+    }
+
    if(context.Request.Method == "GET")
     {
         if(context.Request.Path.StartsWithSegments("/"))
@@ -43,7 +49,7 @@ app.Run(async(HttpContext context) =>
             EmployeeRepository.AddEmployee(employee);
         }
     }
-    else if (context.Request.Method == "PUT")
+   else if (context.Request.Method == "PUT")
     {
         if (context.Request.Path.StartsWithSegments("/employess"))
         {
