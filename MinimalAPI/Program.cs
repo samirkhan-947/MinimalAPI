@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
@@ -31,6 +32,17 @@ app.Run(async(HttpContext context) =>
             }
         }
     }
+   else if(context.Request.Method == "POST")
+    {
+        if(context.Request.Path.StartsWithSegments("/employess"))
+        {
+            using var reader = new StreamReader(context.Request.Body);
+            var body = await reader.ReadToEndAsync();
+            await context.Response.WriteAsync(body);
+            var employee = JsonSerializer.Deserialize<Employee?>(body);
+            EmployeeRepository.AddEmployee(employee);
+        }
+    }
 }); 
 app.Run();
 
@@ -44,6 +56,13 @@ static class EmployeeRepository
 
     };
     public static List<Employee> GetEmployees() => employess;
+    public static void AddEmployee(Employee? employee)
+    {
+        if (employee is not null)
+        {
+            employess.Add(employee);
+        }
+    }
 }
 
 public class Employee
